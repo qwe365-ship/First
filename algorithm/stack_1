@@ -1,0 +1,101 @@
+/*将中缀表达式转换为后缀表达式*/
+#include<iostream>
+#include<vector>
+#include<stack>
+
+using namespace std;
+stack<char> stk;
+vector<string> result;
+string str;
+
+int GetPriority(char sy)//设置各个操作符的优先级
+{
+    switch (sy)
+    {
+    case '#':
+        return 0;
+    case '(':
+        return 1;
+    case '+':
+    case '-':
+        return 3;
+    case '*':
+    case '/':
+        return 5;
+    case ')':
+        return 6;
+    default:
+        return -1;
+    }
+}
+
+
+void shift()
+{
+	for (int i = 0; i < str.size();   i++)
+	{
+        
+        string s;
+        if ('0' <= str[i] && str[i]<= '9')
+        {
+            int j = i;
+            //防止数字有多位将每个数字初始化
+            while ('0' <= str[j] && str[j] <= '9' && j < str.size())
+            {
+                s += str[i];
+                j++;
+            }
+            result.push_back(s);
+            //if (j == str.size()) break;
+            i = j - 1; 
+        }
+        else if (str[i] == '(')
+        {
+            stk.push(str[i]);
+        }
+        else if (str[i] == ')')
+        {
+            while (stk.top() != '(')
+            {
+                s += stk.top();
+                result.push_back(s);
+                stk.pop();
+            }
+            stk.pop();
+        }
+        else
+        {
+         
+            if (stk.size() && GetPriority(stk.top()) >= GetPriority(str[i]))
+            {
+                s += stk.top();
+                result.push_back(s);
+                stk.pop();
+                stk.push(str[i]);
+            }
+            else if(!stk.size())
+                stk.push(str[i]);
+        }
+	}
+
+    while (stk.size())
+    {
+        string s;
+        s += stk.top();
+        result.push_back(s);
+        stk.pop();
+    }
+
+    vector<string>::iterator it;
+    for (it = result.begin(); it < result.end(); it++)
+    {
+        cout << *it ;
+    }
+}
+
+int main()
+{
+	cin >> str;  //读入逆波兰表达式
+    shift();
+	return 0;
+}
